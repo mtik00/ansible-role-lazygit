@@ -1,3 +1,4 @@
 ---
 
+apt_cache_valid_time: 3600
 binary_dir: "{{ ansible_user_dir }}/bin"

@@ -1,1 +1,66 @@
 ---
+- name: Check installed version
+  ansible.builtin.shell:
+    cmd: |
+      if [[ -f {{ binary_dir }}/lazygit ]]; then
+        {{ binary_dir }}/lazygit --version 2>&1
+      else
+        echo "0"
+      fi
+    executable: /bin/bash
+  register: installed_version
+  changed_when: false
+
+- name: install curl
+  ansible.builtin.apt:
+    cache_valid_time: "{{ apt_cache_valid_time }}"
+    name:
+      - curl
+
+- name: Get latest lazygit version  # noqa command-instead-of-module
+  ansible.builtin.shell: |
+      set -o pipefail && curl -Ls "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[0-35.]+'
+  args:
+    executable: /bin/bash
+  register: lazygit_version
+  changed_when: false
+
+- name: latest version
+  ansible.builtin.debug:
+    msg:
+      - "Latest lazygit version: '{{ lazygit_version.stdout }}'"
+      - "Installed lazygit version: '{{ installed_version.stdout }}'"
+
+- name: Do we need to install?
+  ansible.builtin.set_fact:
+    do_install: "{{ installed_version.stdout is version(lazygit_version.stdout, '<') }}"
+
+- name: Install lazygit
+  when: do_install
+  block:
+    - name: Create temp folder
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: ansible
+      register: tempdir
+    - name: Download
+      ansible.builtin.get_url:
+        url: https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_{{ lazygit_version.stdout }}_Linux_x86_64.tar.gz
+        dest: "{{ tempdir.path }}/lazygit.tgz"
+        mode: "0777"
+    - name: Extract
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "{{ tempdir.path }}/lazygit.tgz"
+        dest: "{{ tempdir.path }}"
+        creates: "{{ tempdir.path }}/lazygit"
+    - name: Copy
+      ansible.builtin.copy:
+        remote_src: true
+        src: "{{ tempdir.path }}/lazygit"
+        dest: "{{ binary_dir }}/lazygit"
+        mode: "0755"
+    - name: Cleaup
+      ansible.builtin.file:
+        path: "{{ tempdir.path }}"
+        state: absent
