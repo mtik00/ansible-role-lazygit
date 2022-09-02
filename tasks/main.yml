@@ -3,7 +3,7 @@
   ansible.builtin.shell:
     cmd: |
       if [[ -f {{ binary_dir }}/lazygit ]]; then
-        {{ binary_dir }}/lazygit --version 2>&1
+        {{ binary_dir }}/lazygit -v | grep -Po 'version=([0-9.]+)' | cut -d '=' -f 2 2>&1
       else
         echo "0"
       fi
@@ -12,6 +12,7 @@
   changed_when: false
 
 - name: install curl
+  become: true
   ansible.builtin.apt:
     cache_valid_time: "{{ apt_cache_valid_time }}"
     name:
