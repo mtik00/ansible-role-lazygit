@@ -1,0 +1,19 @@
+---
+
+galaxy_info:
+  author: Tim McFadden
+  description: An ansible role to install and configure the lazygit CLI tool
+  company: ""
+  role_name: lazygit
+  namespace: mtik00
+  issue_tracker_url: https://github.com/mtik00/ansible-role-lazygit/issues
+  license: MIT
+  min_ansible_version: "2.1"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+
+  galaxy_tags: []
+
+dependencies: []

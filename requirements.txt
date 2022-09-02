@@ -1,0 +1,4 @@
+ansible-lint
+commitizen
+molecule[docker,lint]
+pre-commit

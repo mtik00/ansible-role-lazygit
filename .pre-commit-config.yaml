@@ -1,0 +1,15 @@
+---
+
+repos:
+  - repo: https://github.com/ansible-community/ansible-lint.git
+    rev: v6.5.2  # release tag from https://github.com/ansible-community/ansible-lint/releases/
+    hooks:
+      - id: ansible-lint
+        files: \.(yaml|yml)$
+        exclude: (^travis.yml$)
+        stages: ["commit"]
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v2.32.2
+    hooks:
+      - id: commitizen
+        stages: ["commit-msg"]
