@@ -1,7 +1,7 @@
 ---
 - name: Converge
   hosts: all
-  gather_facts: false
+  gather_facts: true
   tasks:
     - name: "Include mtik00.lazygit"
       ansible.builtin.include_role:
