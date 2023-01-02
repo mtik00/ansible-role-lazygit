@@ -20,7 +20,7 @@
 
 - name: Get latest lazygit version  # noqa command-instead-of-module
   ansible.builtin.shell: |
-      set -o pipefail && curl -Ls "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[0-35.]+'
+      set -o pipefail && curl -Ls "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[0-9\.]+'
   args:
     executable: /bin/bash
   register: lazygit_version
